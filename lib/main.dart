@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:calcapp/buttons.dart';
 import 'package:flutter/material.dart';
 
@@ -19,6 +21,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  var userQuestion = "";
+  var userAnswer = "";
   final List<String> buttons = [
     'C',
     'DEL',
@@ -47,7 +51,23 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: Colors.greenAccent[100],
       body: Column(
         children: <Widget>[
-          Expanded(child: Container()),
+          Expanded(
+              child: Container(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                SizedBox(height: 50),
+                Container(
+                    padding: EdgeInsets.all(20),
+                    alignment: Alignment.centerLeft,
+                    child: Text(userQuestion, style: TextStyle(fontSize: 20))),
+                Container(
+                    padding: EdgeInsets.all(20),
+                    alignment: Alignment.centerRight,
+                    child: Text(userAnswer, style: TextStyle(fontSize: 20)))
+              ],
+            ),
+          )),
           Expanded(
               flex: 2,
               child: Container(
@@ -57,9 +77,24 @@ class _HomePageState extends State<HomePage> {
                         crossAxisCount: 4),
                     itemBuilder: (BuildContext context, int index) {
                       return MyButton(
+                        buttonTapped: () {
+                          setState(() {
+                            if (buttons[index] == 'C')
+                              userQuestion = "";
+                            else if (buttons[index] == 'DEL') {
+                              userQuestion = userQuestion.substring(
+                                  0, userQuestion.length - 1);
+                            } else
+                              userQuestion += buttons[index];
+                          });
+                        },
                         buttonText: buttons[index],
-                        buttonColor: isOperator(buttons[index]) ? Colors.green : Colors.greenAccent[200],
-                        textColor: isOperator(buttons[index]) ? Colors.white : Colors.green,
+                        buttonColor: isOperator(buttons[index])
+                            ? Colors.green
+                            : Colors.greenAccent[200],
+                        textColor: isOperator(buttons[index])
+                            ? Colors.white
+                            : Colors.green,
                       );
                     }),
               )),
@@ -67,8 +102,9 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+
   bool isOperator(String x) {
-    if (x == '%' || x == '/' || x == '+' || x == '-' || x == '='|| x == 'x')
+    if (x == '%' || x == '/' || x == '+' || x == '-' || x == '=' || x == 'x')
       return true;
     else
       return false;
