@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:calcapp/buttons.dart';
 import 'package:flutter/material.dart';
+import 'package:math_expressions/math_expressions.dart';
 
 void main() => runApp(MyApp());
 
@@ -23,6 +24,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   var userQuestion = "";
   var userAnswer = "";
+  int flag = 0;
   final List<String> buttons = [
     'C',
     'DEL',
@@ -31,7 +33,7 @@ class _HomePageState extends State<HomePage> {
     '9',
     '8',
     '7',
-    'x',
+    '*',
     '6',
     '5',
     '4',
@@ -79,11 +81,19 @@ class _HomePageState extends State<HomePage> {
                       return MyButton(
                         buttonTapped: () {
                           setState(() {
+                            if (flag == 1) {
+                              userQuestion = "";
+                              flag = 0;
+                            }
+                            userAnswer = "";
                             if (buttons[index] == 'C')
                               userQuestion = "";
                             else if (buttons[index] == 'DEL') {
                               userQuestion = userQuestion.substring(
                                   0, userQuestion.length - 1);
+                            } else if (buttons[index] == "=") {
+                              equalPressed();
+                              flag = 1;
                             } else
                               userQuestion += buttons[index];
                           });
@@ -104,9 +114,19 @@ class _HomePageState extends State<HomePage> {
   }
 
   bool isOperator(String x) {
-    if (x == '%' || x == '/' || x == '+' || x == '-' || x == '=' || x == 'x')
+    if (x == '%' || x == '/' || x == '+' || x == '-' || x == '=' || x == '*')
       return true;
     else
       return false;
+  }
+
+  void equalPressed() {
+    String finalQuestion = userQuestion;
+    Parser p = Parser();
+    Expression exp = p.parse(finalQuestion);
+    ContextModel cm = ContextModel();
+    double eval = exp.evaluate(EvaluationType.REAL, cm);
+
+    userAnswer = eval.toString();
   }
 }
